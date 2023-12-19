@@ -1,0 +1,31 @@
+{
+  "name": "backendsetup",
+  "version": "1.0.0",
+  "description": "backend Setup",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rkctech/backendSetup.git"
+  },
+  "keywords": [
+    "backend",
+    "node",
+    "js",
+    "express",
+    "dotenv"
+  ],
+  "author": "Rohit Kumar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rkctech/backendSetup/issues"
+  },
+  "homepage": "https://github.com/rkctech/backendSetup#readme",
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "prettier": "^3.1.1"
+  }
+}

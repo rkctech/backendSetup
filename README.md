@@ -20,6 +20,7 @@ backendSetup
 - package-lock.json
 - package.json
 - README.md
+## how to get this file stracture (follow step which is given below)
 1. Create a fresh folder<br>
 
 2. Create .gitignore file as well as Readme.md during initialisation of new repo. or we can create manually <br>

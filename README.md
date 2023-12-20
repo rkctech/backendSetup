@@ -14,6 +14,7 @@ backendSetup
    - app.js
    - constants.js
    - index.js
+- .env
 - .gitignore
 - .prettierignore
 - .prettierrc
@@ -83,6 +84,97 @@ now we need create two file .prettierrc for config and other one .prettierignore
 .env
 .env.*
 ```
+## Connet with database 
+Sign in at MongoDB Atlas [click](https://www.mongodb.com/atlas/database)
+
+Data Service >> database >> connect >> compass <br>
+
+- Copy the connection string, then open MongoDB Compass
+```
+mongodb+srv://rohitchaurasiya1830:<password>@cluster0.fqdmot9.mongodb.net/
+```
+Now back at vs code (.env)
+```
+PORT=8000
+MONGODB_URI=mongodb+srv://hitesh:your-password@cluster0.lxl3fsq.mongodb.net
+```
+don't use ending slash from MONGODB_URI & replace your-password with database password 
+
+now back src >> constants.js
+```
+export const DB_NAME = "videotube"
+```
+We need to install mongoose dotenv express
+```
+npm i mongoose dotenv express
+```
+### Approch-1
+come back src >> index.js
+
+```javascript
+import dotenv from "dotenv"
+import mongoose from "mongoose";
+import { DB_NAME } from "../constants.js";
+import express from "express"
+
+dotenv.config({
+    path: './.env'
+})
+
+const app = express()
+
+( async () => {
+    try {
+        await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`)
+        app.on("errror", (error) => {
+            console.log("ERRR: ", error);
+            throw error
+        })
+
+        app.listen(process.env.PORT, () => {
+            console.log(`App is listening on port ${process.env.PORT}`);
+        })
+
+    } catch (error) {
+        console.error("ERROR: ", error)
+        throw err
+    }
+})()
+```
+### Approch-2
+go back db folder create index.js file
+```javascript
+import mongoose from "mongoose";
+import { DB_NAME } from "../constants.js";
+
+
+const connectDB = async () => {
+    try {
+        const connectionInstance = await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`)
+        console.log(`\n MongoDB connected !! DB HOST: ${connectionInstance.connection.host}`);
+    } catch (error) {
+        console.log("MONGODB connection FAILED ", error);
+        process.exit(1)
+    }
+}
+
+export default connectDB
+```
+src >> imdex.js
+```javascript
+// require('dotenv').config({path: './env'})
+import dotenv from "dotenv"
+import connectDB from "./db/index.js";
+
+dotenv.config({
+    path: './.env'
+})
+
+connectDB()
+```
+
+
+
 
 
 

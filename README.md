@@ -3,10 +3,8 @@
 
 2. Create .gitignore file as well as Readme.md during initialisation of new repo. or we can create manually <br>
 - In case of manually created .gitignore file
- - To get content for .gitignore file from gitignore Genrator
-- [gitignore Genrator](https://mrkandreev.name/snippets/gitignore-generator/)<br>
-
-
+- To get content for .gitignore file from [gitignore Genrator](https://mrkandreev.name/snippets/gitignore-generator/)<br>
+- To learn how to use Git as well how to write markdown file [visit](https://github.com/rkctech/MD-Git-Command-Guide)
 
 3. Create package.json file
 ```powershell

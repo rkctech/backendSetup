@@ -1,9 +1,20 @@
 # backendSetup
-I used to create .gitignore file from gitignore Genrator
-- [gitignore Genrator](https://mrkandreev.name/snippets/gitignore-generator/)<br>
-- Second way to create .gitignore file as well as Readme.md during initialisation of new repo.<br>
+1. Create a fresh folder<br>
 
-Whenever we create new folder like public src we used this commond (git should initilise in your root directory)
+2. Create .gitignore file as well as Readme.md during initialisation of new repo. or we can create manually <br>
+- In case of manually created .gitignore file
+ - To get content for .gitignore file from gitignore Genrator
+- [gitignore Genrator](https://mrkandreev.name/snippets/gitignore-generator/)<br>
+
+
+
+3. Create package.json file
+```powershell
+node init
+```
+
+4. To create new folder like public & src we used this commond
+
 ```bash
 mkdir folder_name_1, folder_name_2, folder_name_3
 ```
@@ -11,17 +22,17 @@ mkdir folder_name_1, folder_name_2, folder_name_3
 ```bash
 touch .gitkeep
 ```
-- to create multiple file using touch command use this
+- to create multiple file using touch command use 
+
 ```bash
 touch .gitkeep file_1 file_2 file_3
 ```
-Made some changes in package.json file "type":"module" and start script added like "start":"nodemon ./src/index.js"
-
-dev dependency<br>
+5. dev dependency<br>
 - nodemon (npm i -D nodemon)
 - prettier(npm i -D prettier)
 
-file Stracture
+
+## file Stracture
 
 backendSetup
 - node_modules 
@@ -42,6 +53,41 @@ backendSetup
 - package-lock.json
 - package.json
 - README.md
+
+## node_modules & package-lock.json
+Autogentrated (whenever we install anything by npm i)
+
+## package.json file
+
+Made some changes in package.json file "type":"module" and start script added like "start":"nodemon ./src/index.js"
+
+## Prettier
+now we need create two file .prettierrc for config and other one .prettierignore<br> 
+
+ .prettierrc
+
+```
+{
+    "singleQuote": false,
+    "bracketSpacing": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "semi": true
+}
+```
+.prettierignore file
+
+```
+/.vscode
+/node_modules
+./dist
+
+*.env
+.env
+.env.*
+```
+
+
 
 
 

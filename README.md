@@ -1,4 +1,25 @@
 # backendSetup
+## file Stracture
+
+backendSetup
+- node_modules 
+- public
+- src
+   - controllers
+   - db
+   - middlewares
+   - modeles
+   - routes
+   - utils
+   - app.js
+   - constants.js
+   - index.js
+- .gitignore
+- .prettierignore
+- .prettierrc
+- package-lock.json
+- package.json
+- README.md
 1. Create a fresh folder<br>
 
 2. Create .gitignore file as well as Readme.md during initialisation of new repo. or we can create manually <br>
@@ -28,29 +49,6 @@ touch .gitkeep file_1 file_2 file_3
 5. dev dependency<br>
 - nodemon (npm i -D nodemon)
 - prettier(npm i -D prettier)
-
-
-## file Stracture
-
-backendSetup
-- node_modules 
-- public
-- src
-   - controllers
-   - db
-   - middlewares
-   - modeles
-   - routes
-   - utils
-   - app.js
-   - constants.js
-   - index.js
-- .gitignore
-- .prettierignore
-- .prettierrc
-- package-lock.json
-- package.json
-- README.md
 
 ## node_modules & package-lock.json
 Autogentrated (whenever we install anything by npm i)

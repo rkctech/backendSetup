@@ -172,7 +172,27 @@ dotenv.config({
 
 connectDB()
 ```
+### key point
+- whenever we talk with database then we can see some problem that's why we should always use try-catch or promise.
 
+- Database is always in other continent that's why we should always used Async & await.
+
+- Approch-1 we used 
+```javascript
+;()()
+;(()=>{})()
+;(async ()=>{})()
+;(async ()=>{
+    try{
+
+    }catch(err){
+        console.log(err)
+    }
+})()
+//; use it just cleening purpose
+// process.exit() // learn it
+
+```
 
 
 

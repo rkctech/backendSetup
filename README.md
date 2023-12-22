@@ -193,7 +193,7 @@ connectDB()
 // process.exit() // learn it
 
 ```
-## basic setup for an Express.js application
+## basic setup for an Express.js application (src >> app.js)
 This code is a basic setup for an Express.js application using some commonly used middleware. Let's break it down step by step:
 
 1. **Importing Dependencies:**

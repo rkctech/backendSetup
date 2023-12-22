@@ -651,6 +651,199 @@ if (cloudinaryResponse) {
 
 This code provides a reusable function for uploading files to Cloudinary and handles cleanup (removing the local temporary file) in case of success or failure.
 
+## Creating Models
+
+### User Schema
+
+Here's the code:
+
+```javascript
+import mongoose, { Schema } from "mongoose";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+
+const userSchema = new Schema(
+  {
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+      index: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+    fullName: {
+      type: String,
+      required: true,
+      trim: true,
+      index: true,
+    },
+    avatar: {
+      type: String, // cloudinary url
+      required: true,
+    },
+    coverImage: {
+      type: String, // cloudinary url
+    },
+    watchHistory: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Video",
+      },
+    ],
+    password: {
+      type: String,
+      required: [true, "Password is required"],
+    },
+    refreshToken: {
+      type: String,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
+
+userSchema.methods.isPasswordCorrect = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
+
+userSchema.methods.generateAccessToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+      email: this.email,
+      username: this.username,
+      fullName: this.fullName,
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+    }
+  );
+};
+
+userSchema.methods.generateRefreshToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+    },
+    process.env.REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+    }
+  );
+};
+
+export const User = mongoose.model("User", userSchema);
+```
+
+This code defines a Mongoose schema for a user in a MongoDB database. It includes fields such as `username`, `email`, `fullName`, `avatar`, `coverImage`, `watchHistory`, `password`, and `refreshToken`. Additionally, there are methods for password hashing, password validation, and generating JWT tokens for authentication.
+
+Let's break down the key components:
+
+1. **User Schema:**
+   - The `userSchema` defines the structure of the user document with various fields and their types. These include `username`, `email`, `fullName`, `avatar`, `coverImage`, `watchHistory`, `password`, and `refreshToken`.
+   - `timestamps: true` is set to automatically add `createdAt` and `updatedAt` fields.
+
+2. **Pre-Save Middleware:**
+   - A pre-save middleware is defined using `userSchema.pre("save", ...)`. This middleware hashes the password using bcrypt before saving the user to the database. It only hashes the password if it has been modified.
+
+3. **Password Validation Method:**
+   - The `isPasswordCorrect` method is defined to compare a provided password with the hashed password stored in the database. It uses bcrypt's `compare` method.
+
+4. **JWT Token Generation Methods:**
+   - Two methods, `generateAccessToken` and `generateRefreshToken`, are defined for generating JWT tokens for authentication. They use the `jwt.sign` method and include specific user information in the token payload.
+
+5. **Mongoose Model:**
+   - The Mongoose model `User` is created based on the `userSchema`. This model is then exported for use in other parts of the application.
+
+
+
+Ensure that the necessary environment variables (`ACCESS_TOKEN_SECRET`, `ACCESS_TOKEN_EXPIRY`, `REFRESH_TOKEN_SECRET`, `REFRESH_TOKEN_EXPIRY`) are properly set in your application.
+
+### Video Schema
+This code defines a Mongoose schema for storing video-related information in a MongoDB database. It includes fields such as `videoFile`, `thumbnail`, `title`, `description`, `duration`, `views`, `isPublished`, and `owner`. Additionally, it utilizes a plugin called `mongoose-aggregate-paginate-v2` for pagination capabilities.
+
+Let's break down the code:
+
+```javascript
+import mongoose, { Schema } from "mongoose";
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
+
+const videoSchema = new Schema(
+  {
+    videoFile: {
+      type: String, // Cloudinary URL
+      required: true,
+    },
+    thumbnail: {
+      type: String, // Cloudinary URL
+      required: true,
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    duration: {
+      type: Number,
+      required: true,
+    },
+    views: {
+      type: Number,
+      default: 0,
+    },
+    isPublished: {
+      type: Boolean,
+      default: true,
+    },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+// Plugin for pagination support
+videoSchema.plugin(mongooseAggregatePaginate);
+
+export const Video = mongoose.model("Video", videoSchema);
+```
+
+Explanation:
+
+1. **Video Schema:**
+   - The `videoSchema` defines the structure of a video document with fields like `videoFile`, `thumbnail`, `title`, `description`, `duration`, `views`, `isPublished`, and `owner`.
+   - `timestamps: true` is set to automatically add `createdAt` and `updatedAt` fields.
+
+2. **Pagination Plugin:**
+   - The `mongoose-aggregate-paginate-v2` plugin is applied to the `videoSchema` using `videoSchema.plugin(mongooseAggregatePaginate)`. This plugin adds pagination capabilities to queries involving this schema.
+
+3. **Mongoose Model:**
+   - The Mongoose model `Video` is created based on the `videoSchema`. This model is then exported for use in other parts of the application.
+
+This schema is structured to store video-related data such as video files, thumbnails, titles, descriptions, durations, views, publication status, and references to the video owner. The pagination plugin enhances querying capabilities by enabling paginated results when working with this schema in MongoDB through Mongoose.
 
 
 

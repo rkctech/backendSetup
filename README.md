@@ -331,11 +331,11 @@ In summary, this code connects to a MongoDB database using the `connectDB` funct
 
 ### Step -5
 `src >> utils` let's make some files <br>
-terminal
+#### terminal
 ```bash
 touch asyncHandler.js ApiError.js ApiResponse.js cloudinary.js
 ```
-`asyncHandler.js`
+#### `asyncHandler.js`
 ```javascript
 const asyncHandler = (requestHandler) => {
     return (req, res, next) => {
@@ -431,7 +431,7 @@ const asyncRouteHandlerWithTryCatch = asyncHandler(async (req, res, next) => {
 
 In summary, the `asyncHandler` function is a utility that simplifies the handling of asynchronous operations and errors within Express.js route handlers. It's designed to be used as middleware to wrap asynchronous route handlers. The commented-out forms show different possible implementations or variations.
 
-`ApiError.js`
+#### `ApiError.js`
 
 This code defines a custom error class named `ApiError` in JavaScript, specifically for handling errors in an API context. Let's break down the key components of this class:
 
@@ -509,7 +509,8 @@ console.log(apiError.stack); // Stack trace
 
 In summary, the `ApiError` class is designed to represent errors in an API context, allowing customization of error details, status codes, and additional data. Instances of this class can be used to communicate detailed error information in a standardized way.
 
-` ApiResponse.js`
+#### ` ApiResponse.js`
+
 This code defines a class named `ApiResponse` in JavaScript, which is used to structure and represent responses from an API. Let's break down the key components of this class:
 
 ```javascript
@@ -569,7 +570,7 @@ console.log(errorResponse.success); // false
 
 In summary, the `ApiResponse` class is designed to structure API responses with properties such as status code, data, message, and a boolean indicating success. Instances of this class can be used to consistently format responses in a standardized way throughout an API.
 
-`cloudinary.js`
+#### `cloudinary.js`
 This code defines a function named `uploadOnCloudinary` that is responsible for uploading a file to the Cloudinary cloud storage service. Here's a breakdown of the code:
 
 ```javascript

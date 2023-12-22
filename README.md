@@ -257,6 +257,31 @@ export { app };
 
 This code sets up a basic Express server with middleware for handling CORS, parsing JSON and URL-encoded data, serving static files, and parsing cookies. The configuration for CORS is taken from the `process.env.CORS_ORIGIN` environment variable, allowing you to define the allowed origin dynamically.
 
+### backendSetup >> src >> app.js
+
+```javascript
+import express from "express"
+import cors from "cors"
+import cookieParser from "cookie-parser"
+
+const app = express()
+
+app.use(cors({
+    origin: process.env.CORS_ORIGIN,
+    credentials: true
+}))
+
+app.use(express.json({limit: "16kb"}))
+app.use(express.urlencoded({extended: true, limit: "16kb"}))
+app.use(express.static("public"))
+app.use(cookieParser())
+
+export { app }
+
+
+```
+
+
 
 
 

@@ -919,6 +919,55 @@ app.listen(PORT, () => {
 
 In this example, the `upload.single("file")` middleware is used to handle a single file upload. The uploaded file information is then available in `req.file` for further processing. Adjust the route and handling based on your specific use case.
 
+### Use of router and controller
+#### Step-1
+**src >> controllers >> user.controller.js**
+```javascript
+import { asyncHandler} from "../utils/asyncHandler.js"
+
+
+
+const registerUser = asyncHandler( async (req ,res) => {
+    res.status(200).json({
+        message:ok
+    })
+})
+export {registerUser}
+```
+#### Step -2
+**src >> routes >> user.routes.js**
+```javascript
+import{ Router } from "express";
+
+const router = Router()
+
+
+
+export default router
+```
+#### step -3
+** src >> app.js **
+
+```javascript
+//routes import
+import userRouter from './routes/user.routes.js'
+
+
+//routes declaration
+app.use("/api/v1/users", userRouter)
+
+// http://localhost:8000/api/v1/users/register
+```
+
+#### step -4 
+**API testing **
+ways 
+- Thunder client (VS code plugin)
+- [Postman download](https://www.postman.com/downloads/) (open it >>My Workspace>> collections)
+  - click om + icon
+  - select POST 
+  - Put URL
+  - Send
 
 
 

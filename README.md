@@ -855,55 +855,61 @@ This code provides a reusable function for uploading files to Cloudinary and han
 
 #### Step - 2
 src >> middlewars >> multer.middlewar.js
+ ```javascript
+ import multer from "multer";
 
-It looks like you're using the Multer middleware in a Node.js application with the Express framework to handle file uploads. This code snippet sets up a storage engine for Multer, specifying the destination folder and the filename for the uploaded files.
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, "./public/temp")
+    },
+    filename: function (req, file, cb) {
+      
+      cb(null, file.originalname)
+    }
+  })
+  
+export const upload = multer({ 
+    storage, 
+})
+ ```
+ basic setup for handling file uploads using the `multer` middleware in a Node.js application. Let me break down the code for you:
 
-Let me break down the code for you:
+1. `multer` is a popular middleware for handling `multipart/form-data`, which is commonly used for file uploads.
 
-1. **`multer` import:** Multer is a middleware for handling `multipart/form-data`, which is primarily used for uploading files. In your code, you import it using ES6 syntax.
+2. `multer.diskStorage` is used to configure the storage engine for uploaded files. In your example:
+   - `destination`: Specifies the destination directory where the uploaded files will be stored. In this case, it's set to "./public/temp".
+   - `filename`: Specifies the name of the uploaded file. Here, it's set to the original name of the file.
 
-2. **`storage` configuration:** You configure the storage engine for Multer using `multer.diskStorage`. This engine allows you to define where to store the uploaded files and how to name them.
+3. The configuration object (`storage`) is then passed to `multer` to create the middleware.
 
-   - `destination`: Specifies the directory where uploaded files will be stored. In your case, it's set to "./public/temp".
-   - `filename`: Defines the name of the uploaded file. In your case, it's set to the original name of the file.
+4. `upload` is an instance of the `multer` middleware configured with the storage settings.
 
-3. **`upload` middleware:** You create the Multer middleware using the configured storage engine.
+Here's a brief explanation of the properties you've set in the `multer.diskStorage`:
 
-   - `storage`: The storage engine you defined earlier.
-   - `upload`: The middleware that you can use in your routes to handle file uploads.
+- `destination`: The directory where uploaded files will be stored. In this case, it's "./public/temp".
+- `filename`: The function that determines the name of the uploaded file. In this case, it uses the original name of the file.
 
-Here's an example of how you might use this middleware in an Express route:
+You can use this `upload` middleware in your route handlers to process file uploads. For example, if you have an endpoint that accepts file uploads, you can use it like this:
 
 ```javascript
 import express from "express";
+
 const app = express();
 
-// Import your Multer configuration
-import { upload } from "./multerConfig";
-
-// Handle POST requests to "/upload" with file upload
+// Use the 'upload' middleware for handling file uploads
 app.post("/upload", upload.single("file"), (req, res) => {
-  // Multer has added the `file` property to the request object
-  const uploadedFile = req.file;
-
-  if (!uploadedFile) {
-    return res.status(400).send("No file uploaded.");
-  }
-
-  // Process the uploaded file as needed
+  // req.file contains information about the uploaded file
   res.send("File uploaded successfully!");
 });
 
-// Start the Express server
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
+// Start the server
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 ```
 
-In this example, the `upload.single("file")` middleware is used to handle a single file upload with the field name "file". You can adjust the field name based on your form or client-side implementation. The uploaded file details will be available in the `req.file` object for further processing.
-
-Make sure to adapt the code to fit your application's specific needs and structure.
-
+In this example, the `upload.single("file")` middleware is used to handle a single file upload. The uploaded file information is then available in `req.file` for further processing. Adjust the route and handling based on your specific use case.
 
 
 

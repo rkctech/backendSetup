@@ -772,6 +772,11 @@ This schema is structured to store video-related data such as video files, thumb
 #### Step - 1
 src >> util
 
+terminal
+```
+npm i cloudinary multer
+```
+
 #### `cloudinary.js`
 This code defines a function named `uploadOnCloudinary` that is responsible for uploading a file to the Cloudinary cloud storage service. Here's a breakdown of the code:
 
@@ -854,7 +859,10 @@ if (cloudinaryResponse) {
 This code provides a reusable function for uploading files to Cloudinary and handles cleanup (removing the local temporary file) in case of success or failure.
 
 #### Step - 2
-src >> middlewars >> multer.middlewar.js
+src >> middlewars >> multer.middlewar.js<br>
+
+[Multer docomentation](https://www.npmjs.com/package/multer)
+
  ```javascript
  import multer from "multer";
 

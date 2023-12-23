@@ -570,86 +570,6 @@ console.log(errorResponse.success); // false
 
 In summary, the `ApiResponse` class is designed to structure API responses with properties such as status code, data, message, and a boolean indicating success. Instances of this class can be used to consistently format responses in a standardized way throughout an API.
 
-#### `cloudinary.js`
-This code defines a function named `uploadOnCloudinary` that is responsible for uploading a file to the Cloudinary cloud storage service. Here's a breakdown of the code:
-
-```javascript
-import { v2 as cloudinary } from "cloudinary";
-import fs from "fs";
-
-// Configure Cloudinary using environment variables
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-// Define the function for uploading a file to Cloudinary
-const uploadOnCloudinary = async (localFilePath) => {
-  try {
-    // Check if the localFilePath is provided
-    if (!localFilePath) return null;
-
-    // Upload the file on Cloudinary
-    const response = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: "auto",
-    });
-
-    // File has been uploaded successfully
-    // Remove the locally saved temporary file
-    fs.unlinkSync(localFilePath);
-
-    // Return the Cloudinary response
-    return response;
-  } catch (error) {
-    // Remove the locally saved temporary file as the upload operation failed
-    fs.unlinkSync(localFilePath);
-    return null;
-  }
-};
-
-// Export the uploadOnCloudinary function
-export { uploadOnCloudinary };
-```
-
-Explanation:
-
-1. **Cloudinary Configuration:**
-   - The code imports the Cloudinary v2 SDK (as `v2`) and configures it using the provided environment variables (`CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET`).
-
-2. **`uploadOnCloudinary` Function:**
-   - This function takes a local file path (`localFilePath`) as an argument.
-   - Inside the function:
-     - It checks if the `localFilePath` is provided. If not, it returns `null`.
-     - It uses the `cloudinary.uploader.upload` method to upload the file to Cloudinary. The `resource_type: "auto"` option is set to automatically determine the resource type.
-     - If the upload is successful:
-       - The locally saved temporary file is removed using `fs.unlinkSync`.
-       - The Cloudinary response is returned.
-     - If there is an error during the upload:
-       - The locally saved temporary file is still removed.
-       - `null` is returned.
-
-3. **Exporting the Function:**
-   - The `uploadOnCloudinary` function is exported so that it can be used in other parts of the application.
-
-Usage Example:
-
-```javascript
-import { uploadOnCloudinary } from './path/to/uploadOnCloudinary';
-
-const localFilePath = 'path/to/local/file.jpg';
-
-// Upload the file to Cloudinary
-const cloudinaryResponse = await uploadOnCloudinary(localFilePath);
-
-if (cloudinaryResponse) {
-  console.log('File uploaded to Cloudinary:', cloudinaryResponse.url);
-} else {
-  console.log('File upload to Cloudinary failed.');
-}
-```
-
-This code provides a reusable function for uploading files to Cloudinary and handles cleanup (removing the local temporary file) in case of success or failure.
 
 ## Creating Models
 
@@ -844,6 +764,149 @@ Explanation:
    - The Mongoose model `Video` is created based on the `videoSchema`. This model is then exported for use in other parts of the application.
 
 This schema is structured to store video-related data such as video files, thumbnails, titles, descriptions, durations, views, publication status, and references to the video owner. The pagination plugin enhances querying capabilities by enabling paginated results when working with this schema in MongoDB through Mongoose.
+
+### Uploading file 
+- Express file upload 
+- multer middlewar with cloudinary (now handle by it)
+
+#### Step - 1
+src >> util
+
+#### `cloudinary.js`
+This code defines a function named `uploadOnCloudinary` that is responsible for uploading a file to the Cloudinary cloud storage service. Here's a breakdown of the code:
+
+```javascript
+import { v2 as cloudinary } from "cloudinary";
+import fs from "fs";
+
+// Configure Cloudinary using environment variables
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Define the function for uploading a file to Cloudinary
+const uploadOnCloudinary = async (localFilePath) => {
+  try {
+    // Check if the localFilePath is provided
+    if (!localFilePath) return null;
+
+    // Upload the file on Cloudinary
+    const response = await cloudinary.uploader.upload(localFilePath, {
+      resource_type: "auto",
+    });
+
+    // File has been uploaded successfully
+    // Remove the locally saved temporary file
+    fs.unlinkSync(localFilePath);
+
+    // Return the Cloudinary response
+    return response;
+  } catch (error) {
+    // Remove the locally saved temporary file as the upload operation failed
+    fs.unlinkSync(localFilePath);
+    return null;
+  }
+};
+
+// Export the uploadOnCloudinary function
+export { uploadOnCloudinary };
+```
+
+Explanation:
+
+1. **Cloudinary Configuration:**
+   - The code imports the Cloudinary v2 SDK (as `v2`) and configures it using the provided environment variables (`CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET`).
+
+2. **`uploadOnCloudinary` Function:**
+   - This function takes a local file path (`localFilePath`) as an argument.
+   - Inside the function:
+     - It checks if the `localFilePath` is provided. If not, it returns `null`.
+     - It uses the `cloudinary.uploader.upload` method to upload the file to Cloudinary. The `resource_type: "auto"` option is set to automatically determine the resource type.
+     - If the upload is successful:
+       - The locally saved temporary file is removed using `fs.unlinkSync`.
+       - The Cloudinary response is returned.
+     - If there is an error during the upload:
+       - The locally saved temporary file is still removed.
+       - `null` is returned.
+
+3. **Exporting the Function:**
+   - The `uploadOnCloudinary` function is exported so that it can be used in other parts of the application.
+
+Usage Example:
+
+```javascript
+import { uploadOnCloudinary } from './path/to/uploadOnCloudinary';
+
+const localFilePath = 'path/to/local/file.jpg';
+
+// Upload the file to Cloudinary
+const cloudinaryResponse = await uploadOnCloudinary(localFilePath);
+
+if (cloudinaryResponse) {
+  console.log('File uploaded to Cloudinary:', cloudinaryResponse.url);
+} else {
+  console.log('File upload to Cloudinary failed.');
+}
+```
+
+This code provides a reusable function for uploading files to Cloudinary and handles cleanup (removing the local temporary file) in case of success or failure.
+
+#### Step - 2
+src >> middlewars >> multer.middlewar.js
+
+It looks like you're using the Multer middleware in a Node.js application with the Express framework to handle file uploads. This code snippet sets up a storage engine for Multer, specifying the destination folder and the filename for the uploaded files.
+
+Let me break down the code for you:
+
+1. **`multer` import:** Multer is a middleware for handling `multipart/form-data`, which is primarily used for uploading files. In your code, you import it using ES6 syntax.
+
+2. **`storage` configuration:** You configure the storage engine for Multer using `multer.diskStorage`. This engine allows you to define where to store the uploaded files and how to name them.
+
+   - `destination`: Specifies the directory where uploaded files will be stored. In your case, it's set to "./public/temp".
+   - `filename`: Defines the name of the uploaded file. In your case, it's set to the original name of the file.
+
+3. **`upload` middleware:** You create the Multer middleware using the configured storage engine.
+
+   - `storage`: The storage engine you defined earlier.
+   - `upload`: The middleware that you can use in your routes to handle file uploads.
+
+Here's an example of how you might use this middleware in an Express route:
+
+```javascript
+import express from "express";
+const app = express();
+
+// Import your Multer configuration
+import { upload } from "./multerConfig";
+
+// Handle POST requests to "/upload" with file upload
+app.post("/upload", upload.single("file"), (req, res) => {
+  // Multer has added the `file` property to the request object
+  const uploadedFile = req.file;
+
+  if (!uploadedFile) {
+    return res.status(400).send("No file uploaded.");
+  }
+
+  // Process the uploaded file as needed
+  res.send("File uploaded successfully!");
+});
+
+// Start the Express server
+app.listen(3000, () => {
+  console.log("Server is running on port 3000");
+});
+```
+
+In this example, the `upload.single("file")` middleware is used to handle a single file upload with the field name "file". You can adjust the field name based on your form or client-side implementation. The uploaded file details will be available in the `req.file` object for further processing.
+
+Make sure to adapt the code to fit your application's specific needs and structure.
+
+
+
+
 
 
 

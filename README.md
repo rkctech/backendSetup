@@ -769,7 +769,7 @@ This schema is structured to store video-related data such as video files, thumb
 - Express file upload 
 - multer middlewar with cloudinary (now handle by it)
 
-#### Step - 1
+#### Step - 1  Set Up Cloudinary File Upload Utility
 src >> util
 
 terminal
@@ -858,7 +858,7 @@ if (cloudinaryResponse) {
 
 This code provides a reusable function for uploading files to Cloudinary and handles cleanup (removing the local temporary file) in case of success or failure.
 
-#### Step - 2
+#### Step - 2 Set Up Multer Middleware for File Upload
 src >> middlewars >> multer.middlewar.js<br>
 
 [Multer docomentation](https://www.npmjs.com/package/multer)

@@ -769,7 +769,7 @@ This schema is structured to store video-related data such as video files, thumb
 - Express file upload 
 - multer middlewar with cloudinary (now handle by it)
 
-#### Step - 1  Set Up Cloudinary File Upload Utility
+#### Step - 1: Set Up Cloudinary File Upload Utility
 src >> util
 
 terminal
@@ -858,7 +858,7 @@ if (cloudinaryResponse) {
 
 This code provides a reusable function for uploading files to Cloudinary and handles cleanup (removing the local temporary file) in case of success or failure.
 
-#### Step - 2 Set Up Multer Middleware for File Upload
+#### Step - 2: Set Up Multer Middleware for File Upload
 src >> middlewars >> multer.middlewar.js<br>
 
 [Multer docomentation](https://www.npmjs.com/package/multer)
@@ -1052,6 +1052,131 @@ export { app }
   - Create a new request with the desired HTTP method.
   - Set the request URL.
   - Click "Send" to execute the request.
+
+  ### User Registration Endpoint with Email Validation and File Uploads in Node.js and Express
+
+  **src >> controllers >> user.controller.js**
+
+```javascript
+// Import necessary modules and utilities
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.js";
+import { User } from "../models/user.model.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+
+// Middleware for user registration
+const registerUser = asyncHandler(async (req, res) => {
+  // Destructure user details from the request body
+  const { fullName, email, username, password } = req.body;
+
+  // Check if required fields are not empty
+  if ([fullName, username, password].some((field) => field?.trim() === "")) {
+    throw new ApiError(400, "All fields are required");
+  }
+
+  // Basic email format validation using a regular expression
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    throw new ApiError(400, "Invalid email format");
+  }
+
+
+  // Check if user with the same email or username already exists
+  const existedUser = await User.findOne({
+    $or: [{ username }, { email }],
+  });
+
+  if (existedUser) {
+    throw new ApiError(409, "User with email or username already exists");
+  }
+
+  // Extract paths of avatar and cover image from file uploads
+  const avatarLocalPath = req.files?.avatar[0]?.path;
+  let coverImageLocalPath;
+  if (
+    req.files &&
+    Array.isArray(req.files.coverImage) &&
+    req.files.coverImage.length > 0
+  ) {
+    coverImageLocalPath = req.files.coverImage[0].path;
+  }
+
+  // Check if avatar file is provided
+  if (!avatarLocalPath) {
+    throw new ApiError(400, "Avatar file is required");
+  }
+
+  // Upload avatar and cover image to Cloudinary
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
+  const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+
+  // Check if avatar upload is successful
+  if (!avatar) {
+    throw new ApiError(400, "Avatar file upload failed");
+  }
+
+  // Create a new user in the database
+  const user = await User.create({
+    fullName,
+    avatar: avatar.url,
+    coverImage: coverImage?.url || "", // Set cover image URL or an empty string
+    email,
+    password,
+    username: username.toLowerCase(),
+  });
+
+  // Retrieve the created user excluding password and refresh token
+  const createdUser = await User.findById(user._id).select(
+    "-password -refreshToken"
+  );
+
+  // Check if user creation is successful
+  if (!createdUser) {
+    throw new ApiError(500, "User registration failed");
+  }
+
+  // Return the successful response
+  return res.status(201).json(
+    new ApiResponse(200, createdUser, "User registered successfully")
+  );
+});
+
+// Export the registerUser middleware
+export { registerUser };
+```
+**src >> routes >> user.routes.js**
+```javascript 
+import { Router } from "express";
+import { registerUser } from "../controllers/user.controller.js";
+// import multer (currently added)
+import { upload } from "../middlewares/multer.middleware.js";
+
+// Create an Express Router instance
+const router = Router();
+
+// Define a route for user registration
+router.route("/register").post(
+  // Use the 'upload' middleware from 'multer.middleware.js'  (currently added)
+  upload.fields([
+    {
+      name: "avatar",
+      maxCount: 1,
+    },
+    {
+      name: "coverImage",
+      maxCount: 1,
+    },
+  ]),
+  // Handle user registration logic in 'registerUser' controller
+  registerUser
+);
+
+// Export the router configuration
+export default router;
+
+```
+
 
 
 

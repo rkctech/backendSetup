@@ -997,16 +997,61 @@ export { app }
 
 ```
 
-#### step -4 
-**API testing **
-ways 
-- Thunder client (VS code plugin)
-- [Postman download](https://www.postman.com/downloads/) (open it >>My Workspace>> collections)
-  - click om + icon
-  - select POST 
-  - Put URL
-  - Send
+### Step 4: API Testing Using Thunder Client (VS Code Plugin) and Postman
 
+#### Thunder Client (VS Code Plugin)
+
+1. **Install Thunder Client:**
+   - Make sure you have Visual Studio Code installed.
+   - Go to the Extensions view (Ctrl+Shift+X) and search for "Thunder Client."
+   - Install the Thunder Client extension.
+
+2. **Open Thunder Client:**
+   - Click on the Thunderbolt icon in the activity bar on the side or use the shortcut (`Ctrl+Alt+T` or `Cmd+Alt+T`).
+
+3. **Create a New Request:**
+   - Click on the "+" icon to create a new request.
+   - Choose the HTTP method (e.g., POST) from the dropdown.
+
+4. **Set Request URL:**
+   - Enter the URL in the address bar. For example, use the registration endpoint: `http://localhost:3000/api/users/register`.
+
+5. **Send Request:**
+   - Click on the "Send" button to execute the request.
+   - Observe the response in the Thunder Client interface.
+
+#### Postman
+
+1. **Download and Install Postman:**
+   - If you haven't already, download and install Postman from [https://www.postman.com/downloads/](https://www.postman.com/downloads/).
+
+2. **Open Postman:**
+   - Launch the Postman application.
+
+3. **Create a New Request:**
+   - Click on the "+ New" button to create a new request.
+   - Choose the HTTP method (e.g., POST).
+
+4. **Set Request URL:**
+   - Enter the URL in the address bar, similar to Thunder Client: `http://localhost:3000/api/users/register`.
+
+5. **Send Request:**
+   - Click on the "Send" button to execute the request.
+   - View the response in the Postman interface.
+
+#### Notes for API testing using Thunder Client and Postman
+
+- **Thunder Client:**
+  - Open Thunder Client in VS Code.
+  - Create a new request using the "+" icon.
+  - Choose the HTTP method and set the request URL.
+  - Click "Send" to execute the request.
+
+- **Postman:**
+  - Open Postman.
+  - Create a new request with the desired HTTP method.
+  - Set the request URL.
+  - Click "Send" to execute the request.
 
 
 

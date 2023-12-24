@@ -919,45 +919,73 @@ app.listen(PORT, () => {
 
 In this example, the `upload.single("file")` middleware is used to handle a single file upload. The uploaded file information is then available in `req.file` for further processing. Adjust the route and handling based on your specific use case.
 
-### Use of router and controller
-#### Step-1
-**src >> controllers >> user.controller.js**
-```javascript
-import { asyncHandler} from "../utils/asyncHandler.js"
+### Using Router and Controller for User Registration
 
-
-
-const registerUser = asyncHandler( async (req ,res) => {
-    res.status(200).json({
-        message:"ok"
-    })
-})
-export {registerUser}
-```
-#### Step -2
-**src >> routes >> user.routes.js**
-```javascript
-import{ Router } from "express";
-
-const router = Router()
-
-
-
-export default router
-```
-#### step -3
-** src >> app.js **
+#### Step 1: Create User Controller
+In the `src/controllers/user.controller.js` file, define the user controller for handling user registration.
 
 ```javascript
-//routes import
-import userRouter from './routes/user.routes.js'
+// src/controllers/user.controller.js
+import { asyncHandler } from "../utils/asyncHandler.js";
 
+/**
+ * @desc    Register a new user
+ * @route   POST /api/users/register
+ * @access  Public
+ */
+const registerUser = asyncHandler(async (req, res) => {
+  // Add your registration logic here
+  res.status(200).json({
+    message: "User registered successfully",
+  });
+});
 
-//routes declaration
-app.use("/api/v1/users", userRouter)
-
-// http://localhost:8000/api/v1/users/register
+export { registerUser };
 ```
+
+#### Step 2: Set Up User Routes
+In the `src/routes/user.routes.js` file, create routes using Express Router and link them to the corresponding controllers.
+
+```javascript
+// src/routes/user.routes.js
+import { Router } from "express";
+import { registerUser } from "../controllers/user.controller.js";
+
+const router = Router();
+
+// @desc    Register a new user
+// @route   POST /api/users/register
+// @access  Public
+router.route("/register").post(registerUser);
+
+export default router;
+```
+
+#### Step 3: Integrate Routes into Main App
+In your main application file (e.g., `src/app.js`), integrate the user routes into the express app.
+
+```javascript
+// src/app.js
+import express from "express";
+import userRoutes from "./routes/user.routes.js";
+
+const app = express();
+
+// Other middleware and configurations
+
+// Use User Routes
+app.use("/api/users", userRoutes);
+
+// Other routes and middleware
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+```
+
+This structured approach separates concerns, making your code modular and easier to maintain. The user controller handles the logic, the user routes define the API endpoints, and the main app integrates these routes into the application.
 
 #### step -4 
 **API testing **

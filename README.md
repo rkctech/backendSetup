@@ -966,26 +966,36 @@ In your main application file (e.g., `src/app.js`), integrate the user routes in
 
 ```javascript
 // src/app.js
-import express from "express";
-import userRoutes from "./routes/user.routes.js";
+import express from "express"
+import cors from "cors"
+import cookieParser from "cookie-parser"
 
-const app = express();
+const app = express()
 
-// Other middleware and configurations
+app.use(cors({
+    origin: process.env.CORS_ORIGIN,
+    credentials: true
+}))
 
-// Use User Routes
-app.use("/api/users", userRoutes);
+app.use(express.json({limit: "16kb"}))
+app.use(express.urlencoded({extended: true, limit: "16kb"}))
+app.use(express.static("public"))
+app.use(cookieParser())
 
-// Other routes and middleware
 
-const PORT = process.env.PORT || 3000;
+//routes import
+import userRouter from './routes/user.routes.js'
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+
+//routes declaration
+app.use("/api/v1/users", userRouter)
+
+// http://localhost:8000/api/v1/users/register
+
+
+export { app }
+
 ```
-
-This structured approach separates concerns, making your code modular and easier to maintain. The user controller handles the logic, the user routes define the API endpoints, and the main app integrates these routes into the application.
 
 #### step -4 
 **API testing **

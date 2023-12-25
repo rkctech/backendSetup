@@ -574,6 +574,10 @@ In summary, the `ApiResponse` class is designed to structure API responses with 
 ## Creating Models
 
 ### User Schema
+Terminal
+```bash
+npm i bcrypt jsonwebtoken mongoose-aggregate-paginate-v2
+```
 
 Here's the code:
 

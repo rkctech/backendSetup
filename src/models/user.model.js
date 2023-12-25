@@ -2,6 +2,15 @@ import mongoose, {Schema} from "mongoose";
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 
+// The Mongoose schema provided field in MongoDB:
+
+// - **Type:** String
+// - **Required:** Yes
+// - **Unique:** Yes (no duplicate usernames)
+// - **Lowercase:** Yes (case-insensitive)
+// - **Trim:** Yes (remove leading/trailing whitespaces)
+// - **Index:** Yes (for improved query performance)
+
 const userSchema = new Schema(
     {
         username: {

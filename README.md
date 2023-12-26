@@ -1250,9 +1250,7 @@ export default router;
 
 ```
 
-## Error Solution
-
-# Stopping a Process on Port 8000 (Windows)
+## Stopping a Process on Port 8000 (Windows)
 
 If you encounter an "EADDRINUSE: address already in use" error and need to stop a process using port 8000 on Windows, follow these steps:
 

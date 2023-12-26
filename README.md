@@ -1092,9 +1092,9 @@ export { app }
   - Set the request URL.
   - Click "Send" to execute the request.
 
-  ### User Registration Endpoint with Email Validation and File Uploads in Node.js and Express
+  # User Registration Endpoint with Email Validation and File Uploads in Node.js and Express
 
-#### User Registration Logic Overview
+## User Registration Logic Overview
 
 The user registration logic follows a step-by-step algorithm to ensure a smooth and secure registration process. Below is an overview of the key steps:
 
@@ -1355,8 +1355,13 @@ const loginUser = asyncHandler(async (req, res) => {
 - Cookies are set in the response with the generated tokens.
 - The function returns a JSON response indicating a successful login.
 
-Absolutely! Here's the updated Markdown content:
 
+```javascript
+// routes
+// Import necessary modules and middlewares
+// loginUser
+router.route("/login").post(loginUser);
+```
 
 # Authentication Middleware, Logout Endpoint, and Secured Routes
 
@@ -1439,6 +1444,9 @@ To create secured routes, the `verifyJWT` middleware can be utilized. Here's an 
 
 ```javascript
 //secured routes
+// Import necessary modules and middlewares
+// verifyJWT, logoutUser 
+
 router.route("/logout").post(verifyJWT,  logoutUser);
 ```
 

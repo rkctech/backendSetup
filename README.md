@@ -160,7 +160,7 @@ const connectDB = async () => {
 
 export default connectDB
 ```
-src >> imdex.js
+src >> index.js
 ```javascript
 // require('dotenv').config({path: './env'})
 import dotenv from "dotenv"
@@ -691,7 +691,41 @@ Let's break down the key components:
    - The `isPasswordCorrect` method is defined to compare a provided password with the hashed password stored in the database. It uses bcrypt's `compare` method.
 
 4. **JWT Token Generation Methods:**
-   - Two methods, `generateAccessToken` and `generateRefreshToken`, are defined for generating JWT tokens for authentication. They use the `jwt.sign` method and include specific user information in the token payload.
+   - Two methods, `generateAccessToken` and `generateRefreshToken`, defined methods on a `userSchema`. These methods are used to generate JSON Web Tokens (JWTs) for authentication purposes.
+
+Let's break down the code:
+
+```javascript
+userSchema.methods.generateAccessToken = function(){
+    // jwt.sign(payload, secretOrPrivateKey, [options, callback])
+    return jwt.sign(
+        {
+            // Payload data included in the token
+            _id: this._id,
+            email: this.email,
+            username: this.username,
+            fullName: this.fullName
+        },
+        // Secret key used to sign the token
+        process.env.ACCESS_TOKEN_SECRET,
+        {
+            // Additional options for the token
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+        }
+    );
+};
+```
+
+1. **`jwt.sign` function**: This is a method provided by the `jsonwebtoken` library, which is commonly used for creating and verifying JSON Web Tokens (JWTs). The `sign` method takes three parameters:
+   - **Payload**: An object containing data that will be included in the token. In this case, it includes the user's `_id`, `email`, `username`, and `fullName`.
+   - **Secret Key**: This is a secret key or private key used to sign the token. It's stored in the environment variable `ACCESS_TOKEN_SECRET`.
+   - **Options**: An object specifying additional options for the token. In this case, it includes an expiration time (`expiresIn`) retrieved from the `ACCESS_TOKEN_EXPIRY` environment variable.
+
+2. **Return value**: The `generateAccessToken` method returns the generated JWT. This token is typically sent to the client after a successful authentication, and the client includes it in the headers of subsequent requests to access protected resources on the server.
+
+3. **Usage assumption**: It's assumed that this code is part of a larger authentication system, and this method is called when a user is successfully authenticated to generate an access token. The access token is then used to authenticate and authorize the user for accessing protected routes or resources.
+
+Make sure to keep the secret key (`ACCESS_TOKEN_SECRET`) secure, as it is crucial for verifying the authenticity of the tokens. Additionally, handle token expiration appropriately on the server side.
 
 5. **Mongoose Model:**
    - The Mongoose model `User` is created based on the `userSchema`. This model is then exported for use in other parts of the application.
@@ -700,7 +734,8 @@ Let's break down the key components:
 
 Ensure that the necessary environment variables (`ACCESS_TOKEN_SECRET`, `ACCESS_TOKEN_EXPIRY`, `REFRESH_TOKEN_SECRET`, `REFRESH_TOKEN_EXPIRY`) are properly set in your application.
 
-### Video Schema
+
+## Video Schema
 This code defines a Mongoose schema for storing video-related information in a MongoDB database. It includes fields such as `videoFile`, `thumbnail`, `title`, `description`, `duration`, `views`, `isPublished`, and `owner`. Additionally, it utilizes a plugin called `mongoose-aggregate-paginate-v2` for pagination capabilities.
 
 Let's break down the code:

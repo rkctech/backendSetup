@@ -1250,6 +1250,31 @@ export default router;
 
 ```
 
+## Error Solution
+
+# Stopping a Process on Port 8000 (Windows)
+
+If you encounter an "EADDRINUSE: address already in use" error and need to stop a process using port 8000 on Windows, follow these steps:
+
+1. Open PowerShell as an administrator.
+
+2. Run the following command to identify the process using port 8000:
+    ```powershell
+    Get-Process -Id (Get-NetTCPConnection -LocalPort 8000).OwningProcess
+    ```
+   Note the Process ID (PID) of the process.
+
+3. Run the following command to forcibly terminate the identified process:
+    ```powershell
+    Stop-Process -Id <PID> -Force
+    ```
+   Replace `<PID>` with the actual Process ID obtained from the previous command.
+
+**Note:** Use caution when terminating a process, as it may result in the loss of unsaved data or ongoing operations associated with that process.
+
+Now, you should be able to run your application on port 8000 without encountering the "EADDRINUSE" error.
+
+
 
 
 

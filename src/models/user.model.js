@@ -49,7 +49,7 @@ const userSchema = new Schema(
         ],
         password: {
             type: String,
-            required: [true, 'Password is required']
+            required: [true, 'Password is required'] // custom error message
         },
         refreshToken: {
             type: String
@@ -73,19 +73,24 @@ userSchema.methods.isPasswordCorrect = async function(password){
 }
 
 userSchema.methods.generateAccessToken = function(){
+    // jwt.sign(payload, secretOrPrivateKey, [options, callback])
     return jwt.sign(
         {
+            // Payload data included in the token
             _id: this._id,
             email: this.email,
             username: this.username,
             fullName: this.fullName
         },
+        // Secret key used to sign the token
         process.env.ACCESS_TOKEN_SECRET,
         {
+            // Additional options for the token
             expiresIn: process.env.ACCESS_TOKEN_EXPIRY
         }
-    )
-}
+    );
+};
+
 userSchema.methods.generateRefreshToken = function(){
     return jwt.sign(
         {

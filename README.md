@@ -96,7 +96,7 @@ mongodb+srv://rohitchaurasiya1830:<password>@cluster0.fqdmot9.mongodb.net/
 Now back at vs code (.env)
 ```
 PORT=8000
-MONGODB_URI=mongodb+srv://hitesh:your-password@cluster0.lxl3fsq.mongodb.net
+mongodb+srv://rohitchaurasiya1830:<password>@cluster0.fqdmot9.mongodb.net
 ```
 don't use ending slash from MONGODB_URI & replace your-password with database password 
 

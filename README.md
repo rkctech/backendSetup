@@ -1554,6 +1554,9 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
         .status(200)
         .json(new ApiResponse(200, {}, "Password changed successfully"));
 });
+
+// Define the route for change current password
+router.route("/change-password").post(verifyJWT, changeCurrentPassword)
 ```
 # Get Current User Endpoint
 
@@ -1573,6 +1576,9 @@ const getCurrentUser = asyncHandler(async (req, res) => {
             "User fetched successfully"
         ));
 });
+
+// Define the route to get current user
+router.route("/current-user").get(verifyJWT, getCurrentUser)
 ```
 # Update Account Details Endpoint
 
@@ -1608,6 +1614,9 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
         .status(200)
         .json(new ApiResponse(200, user, "Account details updated successfully"));
 });
+
+// Define the route to update account details
+router.route("/update-account").patch(verifyJWT, updateAccountDetails)
 ```
 # Update User Avatar Endpoint
 
@@ -1652,6 +1661,10 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
         .status(200)
         .json(new ApiResponse(200, user, "Avatar image updated successfully"));
 });
+
+// Define the route to update avatar
+router.route("/avatar").patch(verifyJWT, upload.single("avatar"), updateUserAvatar)
+
 ```
 # Update User Cover Image Endpoint
 
@@ -1696,7 +1709,10 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
         .status(200)
         .json(new ApiResponse(200, user, "Cover image updated successfully"));
 });
+// Define the route to update coverImage
+router.route("/cover-image").patch(verifyJWT, upload.single("/coverImage"), updateUserCoverImage)
 ```
+
 
 
 

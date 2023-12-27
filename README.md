@@ -1,4 +1,4 @@
-# backendSetup
+# BackendSetup
 ## file Stracture
 
 backendSetup
@@ -21,7 +21,7 @@ backendSetup
 - package-lock.json
 - package.json
 - README.md
-## how to get this file stracture (follow step which is given below)
+### how to get this file stracture (follow step which is given below)
 1. Create a fresh folder<br>
 
 2. Create .gitignore file as well as Readme.md during initialisation of new repo. or we can create manually <br>
@@ -52,14 +52,14 @@ touch .gitkeep file_1 file_2 file_3
 - nodemon (npm i -D nodemon)
 - prettier(npm i -D prettier)
 
-## node_modules & package-lock.json
+### node_modules & package-lock.json
 Autogentrated (whenever we install anything by npm i)
 
-## package.json file
+### package.json file
 
 Made some changes in package.json file "type":"module" and start script added like "start":"nodemon ./src/index.js"
 
-## Prettier
+### Prettier
 now we need create two file .prettierrc for config and other one .prettierignore<br> 
 
  .prettierrc
@@ -84,7 +84,7 @@ now we need create two file .prettierrc for config and other one .prettierignore
 .env
 .env.*
 ```
-## Connet with database 
+# Connet with database 
 Sign in at MongoDB Atlas [click](https://www.mongodb.com/atlas/database)
 
 Data Service >> database >> connect >> compass <br>
@@ -100,7 +100,8 @@ MONGODB_URI=mongodb+srv://hitesh:your-password@cluster0.lxl3fsq.mongodb.net
 ```
 don't use ending slash from MONGODB_URI & replace your-password with database password 
 
-now back src >> constants.js
+`now back src >> constants.js`
+
 ```
 export const DB_NAME = "videotube"
 ```
@@ -108,8 +109,8 @@ We need to install mongoose dotenv express
 ```
 npm i mongoose dotenv express
 ```
-### Approch-1
-come back src >> index.js
+## Approch-1
+`come back src >> index.js`
 
 ```javascript
 import dotenv from "dotenv"
@@ -141,7 +142,7 @@ const app = express()
     }
 })()
 ```
-### Approch-2
+## Approch-2
 go back db folder create index.js file
 ```javascript
 import mongoose from "mongoose";
@@ -160,7 +161,7 @@ const connectDB = async () => {
 
 export default connectDB
 ```
-src >> index.js
+`src >> index.js`
 ```javascript
 // require('dotenv').config({path: './env'})
 import dotenv from "dotenv"
@@ -193,7 +194,9 @@ connectDB()
 // process.exit() // learn it
 
 ```
-## basic setup for an Express.js application (src >> app.js)
+# Basic setup for an Express.js application 
+
+`**src >> app.js**`
 
 ### Step -1
 terminal
@@ -571,9 +574,9 @@ console.log(errorResponse.success); // false
 In summary, the `ApiResponse` class is designed to structure API responses with properties such as status code, data, message, and a boolean indicating success. Instances of this class can be used to consistently format responses in a standardized way throughout an API.
 
 
-## Creating Models
+# Creating Models
 
-### User Schema
+## User Schema
 Terminal
 ```bash
 npm i bcrypt jsonwebtoken mongoose-aggregate-paginate-v2
@@ -582,98 +585,113 @@ npm i bcrypt jsonwebtoken mongoose-aggregate-paginate-v2
 Here's the code:
 
 ```javascript
-import mongoose, { Schema } from "mongoose";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
+import mongoose, {Schema} from "mongoose";
+import jwt from "jsonwebtoken"
+import bcrypt from "bcrypt"
+
+// The Mongoose schema provided field in MongoDB:
+
+// - **Type:** String
+// - **Required:** Yes
+// - **Unique:** Yes (no duplicate usernames)
+// - **Lowercase:** Yes (case-insensitive)
+// - **Trim:** Yes (remove leading/trailing whitespaces)
+// - **Index:** Yes (for improved query performance)
 
 const userSchema = new Schema(
-  {
-    username: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
-      index: true,
+    {
+        username: {
+            type: String,
+            required: true,
+            unique: true,
+            lowercase: true,
+            trim: true, 
+            index: true
+        },
+        email: {
+            type: String,
+            required: true,
+            unique: true,
+            lowecase: true,
+            trim: true, 
+        },
+        fullName: {
+            type: String,
+            required: true,
+            trim: true, 
+            index: true
+        },
+        avatar: {
+            type: String, // cloudinary url
+            required: true,
+        },
+        coverImage: {
+            type: String, // cloudinary url
+        },
+        watchHistory: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "Video"
+            }
+        ],
+        password: {
+            type: String,
+            required: [true, 'Password is required'] // custom error message
+        },
+        refreshToken: {
+            type: String
+        }
+
     },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
-    },
-    fullName: {
-      type: String,
-      required: true,
-      trim: true,
-      index: true,
-    },
-    avatar: {
-      type: String, // cloudinary url
-      required: true,
-    },
-    coverImage: {
-      type: String, // cloudinary url
-    },
-    watchHistory: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Video",
-      },
-    ],
-    password: {
-      type: String,
-      required: [true, "Password is required"],
-    },
-    refreshToken: {
-      type: String,
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
+    {
+        timestamps: true
+    }
+)
 
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+    if(!this.isModified("password")) return next();
 
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
-});
+    this.password = await bcrypt.hash(this.password, 10)
+    next()
+})
 
-userSchema.methods.isPasswordCorrect = async function (password) {
-  return await bcrypt.compare(password, this.password);
+userSchema.methods.isPasswordCorrect = async function(password){
+    return await bcrypt.compare(password, this.password)
+}
+
+userSchema.methods.generateAccessToken = function(){
+    // jwt.sign(payload, secretOrPrivateKey, [options, callback])
+    return jwt.sign(
+        {
+            // Payload data included in the token
+            _id: this._id,
+            email: this.email,
+            username: this.username,
+            fullName: this.fullName
+        },
+        // Secret key used to sign the token
+        process.env.ACCESS_TOKEN_SECRET,
+        {
+            // Additional options for the token
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+        }
+    );
 };
 
-userSchema.methods.generateAccessToken = function () {
-  return jwt.sign(
-    {
-      _id: this._id,
-      email: this.email,
-      username: this.username,
-      fullName: this.fullName,
-    },
-    process.env.ACCESS_TOKEN_SECRET,
-    {
-      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
-    }
-  );
-};
+userSchema.methods.generateRefreshToken = function(){
+    return jwt.sign(
+        {
+            _id: this._id,
+            
+        },
+        process.env.REFRESH_TOKEN_SECRET,
+        {
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+        }
+    )
+}
 
-userSchema.methods.generateRefreshToken = function () {
-  return jwt.sign(
-    {
-      _id: this._id,
-    },
-    process.env.REFRESH_TOKEN_SECRET,
-    {
-      expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
-    }
-  );
-};
-
-export const User = mongoose.model("User", userSchema);
+export const User = mongoose.model("User", userSchema)
 ```
 
 This code defines a Mongoose schema for a user in a MongoDB database. It includes fields such as `username`, `email`, `fullName`, `avatar`, `coverImage`, `watchHistory`, `password`, and `refreshToken`. Additionally, there are methods for password hashing, password validation, and generating JWT tokens for authentication.
@@ -804,11 +822,11 @@ Explanation:
 
 This schema is structured to store video-related data such as video files, thumbnails, titles, descriptions, durations, views, publication status, and references to the video owner. The pagination plugin enhances querying capabilities by enabling paginated results when working with this schema in MongoDB through Mongoose.
 
-### Uploading file 
+# Uploading file 
 - Express file upload 
 - multer middlewar with cloudinary (now handle by it)
 
-#### Step - 1: Set Up Cloudinary File Upload Utility
+### Step - 1 : Set Up Cloudinary File Upload Utility
 src >> util
 
 terminal
@@ -897,8 +915,8 @@ if (cloudinaryResponse) {
 
 This code provides a reusable function for uploading files to Cloudinary and handles cleanup (removing the local temporary file) in case of success or failure.
 
-#### Step - 2: Set Up Multer Middleware for File Upload
-src >> middlewars >> multer.middlewar.js<br>
+### Step - 2 : Set Up Multer Middleware for File Upload
+`src >> middlewars >> multer.middlewar.js<br>`
 
 [Multer docomentation](https://www.npmjs.com/package/multer)
 
@@ -958,9 +976,9 @@ app.listen(PORT, () => {
 
 In this example, the `upload.single("file")` middleware is used to handle a single file upload. The uploaded file information is then available in `req.file` for further processing. Adjust the route and handling based on your specific use case.
 
-### Using Router and Controller for User Registration
+# Using Router and Controller for User Registration
 
-#### Step 1: Create User Controller
+### Step 1: Create User Controller
 In the `src/controllers/user.controller.js` file, define the user controller for handling user registration.
 
 ```javascript
@@ -982,7 +1000,7 @@ const registerUser = asyncHandler(async (req, res) => {
 export { registerUser };
 ```
 
-#### Step 2: Set Up User Routes
+### Step 2: Set Up User Routes
 In the `src/routes/user.routes.js` file, create routes using Express Router and link them to the corresponding controllers.
 
 ```javascript
@@ -1000,7 +1018,7 @@ router.route("/register").post(registerUser);
 export default router;
 ```
 
-#### Step 3: Integrate Routes into Main App
+### Step 3: Integrate Routes into Main App
 In your main application file (e.g., `src/app.js`), integrate the user routes into the express app.
 
 ```javascript
@@ -1128,7 +1146,7 @@ The user registration logic follows a step-by-step algorithm to ensure a smooth 
 
 This structured approach ensures data integrity, validation, and secure handling of user information during the registration process. It also includes the use of external services, such as Cloudinary, for efficient storage and retrieval of user avatars.
 
-  **src >> controllers >> user.controller.js**
+ ` **src >> controllers >> user.controller.js**`
 
 ```javascript
 // Import necessary modules and utilities
@@ -1218,7 +1236,7 @@ const registerUser = asyncHandler(async (req, res) => {
 // Export the registerUser middleware
 export { registerUser };
 ```
-**src >> routes >> user.routes.js**
+`**src >> routes >> user.routes.js**`
 ```javascript 
 import { Router } from "express";
 import { registerUser } from "../controllers/user.controller.js";
@@ -1250,7 +1268,7 @@ export default router;
 
 ```
 
-## Stopping a Process on Port 8000 (Windows)
+# Stopping a Process on Port 8000 (Windows)
 
 If you encounter an "EADDRINUSE: address already in use" error and need to stop a process using port 8000 on Windows, follow these steps:
 

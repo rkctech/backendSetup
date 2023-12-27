@@ -1092,7 +1092,7 @@ export { app }
   - Set the request URL.
   - Click "Send" to execute the request.
 
-  # User Registration Endpoint with Email Validation and File Uploads in Node.js and Express
+  # User Registration Endpoint
 
 ## User Registration Logic Overview
 
@@ -1451,6 +1451,253 @@ router.route("/logout").post(verifyJWT,  logoutUser);
 ```
 
 The `router.route("/logout").post(verifyJWT,  logoutUser)` snippet demonstrates how to secure the `/logout` endpoint by using the `verifyJWT` middleware. This ensures that only authenticated users can access the `logoutUser` endpoint.
+
+# Refresh Access Token Endpoint
+
+This endpoint provides a mechanism for refreshing user access tokens using a valid refresh token. The code snippet below outlines the implementation details.
+
+## Code Explanation
+
+```javascript
+// Import necessary modules and dependencies
+const refreshAccessToken = asyncHandler(async (req, res) => {
+    // Extracting the refresh token from either cookies or request body
+    const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
+
+    // Handling case where no refresh token is provided
+    if (!incomingRefreshToken) {
+        throw new ApiError(401, "Unauthorized request")
+    }
+
+    try {
+        // Verifying the incoming refresh token using the secret
+        const decodedToken = jwt.verify(
+            incomingRefreshToken,
+            process.env.REFRESH_TOKEN_SECRET
+        )
+    
+        // Finding the user associated with the decoded refresh token ID
+        const user = await User.findById(decodedToken?._id)
+    
+        // Handling case where no user is found for the provided token
+        if (!user) {
+            throw new ApiError(401, "Invalid refresh token")
+        }
+    
+        // Checking if the incoming refresh token matches the stored one for the user
+        if (incomingRefreshToken !== user?.refreshToken) {
+            throw new ApiError(401, "Refresh token is expired or used")
+        }
+    
+        // Configuring options for setting cookies
+        const options = {
+            httpOnly: true,
+            secure: true
+        }
+    
+        // Generating new access and refresh tokens for the user
+        const {accessToken, newRefreshToken} = await generateAccessAndRefereshTokens(user._id)
+    
+        // Sending back the new tokens as cookies in the response
+        return res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", newRefreshToken, options)
+        .json(
+            new ApiResponse(
+                200, 
+                {accessToken, refreshToken: newRefreshToken},
+                "Access token refreshed"
+            )
+        )
+    } catch (error) {
+        // Handling any errors that occur during token verification or generation
+        throw new ApiError(401, error?.message || "Invalid refresh token")
+    }
+})
+
+// Define the route for refreshing access tokens
+router.route("/refresh-token").post(refreshAccessToken);
+```
+
+# Change Current Password Endpoint
+
+This endpoint allows users to change their current password by providing the old password and a new password. The code snippet below outlines the implementation details.
+
+## Code Explanation
+
+```javascript
+// Import necessary modules and dependencies
+const changeCurrentPassword = asyncHandler(async (req, res) => {
+    // Destructuring oldPassword and newPassword from the request body
+    const { oldPassword, newPassword } = req.body;
+
+    // Fetching the user based on the authenticated user's ID
+    const user = await User.findById(req.user?._id);
+
+    // Verifying if the provided old password is correct
+    const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
+
+    // Handling case where the old password is incorrect
+    if (!isPasswordCorrect) {
+        throw new ApiError(400, "Invalid old password");
+    }
+
+    // Updating the user's password with the new password
+    user.password = newPassword;
+
+    // Saving the user with validation checks disabled for the password field
+    await user.save({ validateBeforeSave: false });
+
+    // Responding with a success message
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Password changed successfully"));
+});
+```
+# Get Current User Endpoint
+
+This endpoint retrieves information about the currently authenticated user. The code snippet below outlines the implementation details.
+
+## Code Explanation
+
+```javascript
+// Import necessary modules and dependencies
+const getCurrentUser = asyncHandler(async (req, res) => {
+    // Responding with a JSON containing the currently authenticated user
+    return res
+        .status(200)
+        .json(new ApiResponse(
+            200,
+            req.user,
+            "User fetched successfully"
+        ));
+});
+```
+# Update Account Details Endpoint
+
+This endpoint allows users to update their account details, such as full name and email. The code snippet below outlines the implementation details.
+
+## Code Explanation
+
+```javascript
+// Import necessary modules and dependencies
+const updateAccountDetails = asyncHandler(async (req, res) => {
+    // Destructuring fullName and email from the request body
+    const { fullName, email } = req.body;
+
+    // Checking if both fullName and email are provided
+    if (!fullName || !email) {
+        throw new ApiError(400, "All fields are required");
+    }
+
+    // Updating account details in the database
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                fullName,
+                email: email,
+            },
+        },
+        { new: true }
+    ).select("-password"); // Excluding the password field from the response
+
+    // Responding with a JSON containing the updated user information
+    return res
+        .status(200)
+        .json(new ApiResponse(200, user, "Account details updated successfully"));
+});
+```
+# Update User Avatar Endpoint
+
+This endpoint allows users to update their avatar by uploading a new image. The code snippet below outlines the implementation details.
+
+## Code Explanation
+
+```javascript
+// Import necessary modules and dependencies
+const updateUserAvatar = asyncHandler(async (req, res) => {
+    // Extracting the local path of the uploaded avatar file
+    const avatarLocalPath = req.file?.path;
+
+    // Handling case where the avatar file is missing
+    if (!avatarLocalPath) {
+        throw new ApiError(400, "Avatar file is missing");
+    }
+
+    // TODO: Implement logic to delete old avatar image (assignment)
+
+    // Uploading the avatar image to Cloudinary
+    const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+    // Handling case where there's an error during avatar upload
+    if (!avatar.url) {
+        throw new ApiError(400, "Error while uploading avatar");
+    }
+
+    // Updating the user's avatar URL in the database
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                avatar: avatar.url,
+            },
+        },
+        { new: true }
+    ).select("-password");
+
+    // Responding with a JSON containing the updated user information
+    return res
+        .status(200)
+        .json(new ApiResponse(200, user, "Avatar image updated successfully"));
+});
+```
+# Update User Cover Image Endpoint
+
+This endpoint allows users to update their cover image by uploading a new file. The code snippet below outlines the implementation details.
+
+## Code Explanation
+
+```javascript
+// Import necessary modules and dependencies
+const updateUserCoverImage = asyncHandler(async (req, res) => {
+    // Extracting the local path of the uploaded cover image file
+    const coverImageLocalPath = req.file?.path;
+
+    // Handling case where the cover image file is missing
+    if (!coverImageLocalPath) {
+        throw new ApiError(400, "Cover image file is missing");
+    }
+
+    // TODO: Implement logic to delete old cover image (assignment)
+
+    // Uploading the cover image to Cloudinary
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+
+    // Handling case where there's an error during cover image upload
+    if (!coverImage.url) {
+        throw new ApiError(400, "Error while uploading cover image");
+    }
+
+    // Updating the user's cover image URL in the database
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                coverImage: coverImage.url,
+            },
+        },
+        { new: true }
+    ).select("-password");
+
+    // Responding with a JSON containing the updated user information
+    return res
+        .status(200)
+        .json(new ApiResponse(200, user, "Cover image updated successfully"));
+});
+```
+
 
 
 
